@@ -10,6 +10,8 @@ TagManager:
   - Canvas
   - XP Bar Slider
   - Enemy
+  - Main camera
+  - Blood Sprite
   layers:
   - Default
   - TransparentFX
