@@ -5,7 +5,7 @@ using UnityEngine;
 public class EscMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject _escapeMenu;
-    public bool isMenuActive;
+    public static bool isMenuActive;
 
     void Update()
     {

@@ -12,6 +12,10 @@ TagManager:
   - Enemy
   - Main camera
   - Blood Sprite
+  - Player DF
+  - NPC DF
+  - Boss
+  - Boss Player Enter Sensor
   layers:
   - Default
   - TransparentFX
@@ -24,7 +28,7 @@ TagManager:
   - Enemy
   - Player
   - Special Platform
-  - 
+  - Invulnerable
   - 
   - 
   - 

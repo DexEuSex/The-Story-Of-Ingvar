@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,14 +12,12 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] public float attackRange;
     [SerializeField] public LayerMask whoIsEnemyToThisActor;
     private IsAliveComponent _IsAliveComponent;
-    private EscMenuController _escMenuController;
     private ActorStatsController _actorStatsController;
     private Animator _playerCombatAnimator;
     private bool _inAttack = false;
 
     void Start()
     {
-        _escMenuController = GameObject.FindGameObjectWithTag("Canvas").GetComponent<EscMenuController>();
         _playerCombatAnimator = GetComponent<Animator>();
         _IsAliveComponent = GetComponent<IsAliveComponent>();
         _actorStatsController = GetComponent<ActorStatsController>();
@@ -26,7 +25,7 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        if(!_escMenuController.isMenuActive)
+        if(!EscMenuController.isMenuActive)
         {
             AttackLogic();
         }
@@ -45,15 +44,13 @@ public class PlayerAttack : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space) && !_inAttack)
             {
-                if(GetComponent<SpriteRenderer>().flipX)
-                    StartCoroutine("DealDamageToEnemyFlipX");
-                else
-                    StartCoroutine("DealDamageToEnemy");
+                if(GetComponent<SpriteRenderer>().flipX) StartCoroutine("DealDamageToEnemyFlipX");
+                else StartCoroutine("DealDamageToEnemy");
             }
         }
         else
         {
-            _timeCounter -= Time.deltaTime;
+            _timeCounter -= Time.deltaTime; 
         }
     }
 
@@ -61,15 +58,24 @@ public class PlayerAttack : MonoBehaviour
     {
         _inAttack = true;
         _playerCombatAnimator.SetTrigger("Attack");
+        AudioManager.PlayAttackSfx(AudioManager._audioManagerInner.attackAudioSource);
         yield return new WaitForSeconds(0.5f);
-        Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPose.position, attackRange, whoIsEnemyToThisActor);
-        for (int i = 0; i < enemiesToDamage.Length; i++)
+        try
         {
-            enemiesToDamage[i].GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Player");
+            Collider2D enemyToDamage = Physics2D.OverlapCircle(attackPose.position, attackRange, whoIsEnemyToThisActor);
+            if (enemyToDamage != null)
+            {
+                enemyToDamage.GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Player");
+            }
+            _timeCounter = timeBetweenAttack;
+            _inAttack = false;
+            StartCoroutine("StartCombatIdle");
         }
-        _timeCounter = timeBetweenAttack;
-        _inAttack = false;
-        StartCoroutine("StartCombatIdle");
+        catch (NullReferenceException)
+        {
+            _timeCounter = timeBetweenAttack;
+            _inAttack = false;
+        }
     }
 
     IEnumerator DealDamageToEnemyFlipX()
@@ -77,14 +83,22 @@ public class PlayerAttack : MonoBehaviour
         _inAttack = true;
         _playerCombatAnimator.SetTrigger("Attack");
         yield return new WaitForSeconds(0.5f);
-        Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPoseFlipX.position, attackRange, whoIsEnemyToThisActor);
-        for (int i = 0; i < enemiesToDamage.Length; i++)
+        try
         {
-            enemiesToDamage[i].GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Player");
+            Collider2D enemyToDamage = Physics2D.OverlapCircle(attackPoseFlipX.position, attackRange, whoIsEnemyToThisActor);
+            if (enemyToDamage != null)
+            {
+                enemyToDamage.GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Player");
+            }
+            _timeCounter = timeBetweenAttack;
+            _inAttack = false;
+            StartCoroutine("StartCombatIdle");
         }
-        _timeCounter = timeBetweenAttack;
-        _inAttack = false;
-        StartCoroutine("StartCombatIdle");
+        catch(NullReferenceException)
+        {
+            _timeCounter = timeBetweenAttack;
+            _inAttack = false;
+        }
     }
 
     IEnumerator StartCombatIdle()

@@ -12,7 +12,6 @@ public class PlayerMovement : MonoBehaviour
     private Animator _playerAnimator;
     private GroundSensor _playerGroundSensor;
     private IsAliveComponent _isAliveComponent;
-    private EscMenuController _escMenuController;
     private bool _jumpOffEnable = false;
     private int _enemyObjectLayer;
     private int _playerObjectLayer;
@@ -26,7 +25,6 @@ public class PlayerMovement : MonoBehaviour
         _isAliveComponent = GetComponent<IsAliveComponent>();
         _playerAnimator = GetComponent<Animator>();
         playerBody2D = GetComponent<Rigidbody2D>();
-        _escMenuController = GameObject.FindGameObjectWithTag("Canvas").GetComponent<EscMenuController>();
         _playerGroundSensor = transform.Find("Ground Sensor").GetComponent<GroundSensor>();
         _playerObjectLayer = LayerMask.NameToLayer("Player");
         _enemyObjectLayer = LayerMask.NameToLayer("Enemy");
@@ -45,14 +43,14 @@ public class PlayerMovement : MonoBehaviour
             _jumpCounter = 0;
         }
 
-        if(Input.GetKeyDown(KeyCode.W) && _playerGroundSensor.isGround && _isAliveComponent.isAlive && !_escMenuController.isMenuActive)
+        if(Input.GetKeyDown(KeyCode.W) && _playerGroundSensor.isGround && _isAliveComponent.isAlive && !EscMenuController.isMenuActive)
         {
             Jump();
             _jumpCounter++;
 
         }
 
-        else if (Input.GetKeyDown(KeyCode.W) && !_playerGroundSensor.isGround && _isAliveComponent.isAlive && !_escMenuController.isMenuActive)
+        else if (Input.GetKeyDown(KeyCode.W) && !_playerGroundSensor.isGround && _isAliveComponent.isAlive && !EscMenuController.isMenuActive)
         {
             if (_jumpCounter < 2)
             {
@@ -60,13 +58,13 @@ public class PlayerMovement : MonoBehaviour
             }
             _jumpCounter = 2;
         }
-        if(_isAliveComponent.isAlive && !_escMenuController.isMenuActive)
+        if(_isAliveComponent.isAlive && !EscMenuController.isMenuActive)
         {
             BasicMovement();
             JumpThroughPlafrom();
         }
 
-        if (Input.GetKey(KeyCode.S) && _isAliveComponent.isAlive && !_escMenuController.isMenuActive)
+        if (Input.GetKey(KeyCode.S) && _isAliveComponent.isAlive && !EscMenuController.isMenuActive)
         {
             StartCoroutine("JumpOffPlatform");
         }
@@ -108,9 +106,13 @@ public class PlayerMovement : MonoBehaviour
         // ----
 
         if (move > 0)
+        {
             GetComponent<SpriteRenderer>().flipX = true;
+        }
         else if (move < 0)
+        {
             GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
     private void Jump()
     {
@@ -184,5 +186,27 @@ public class PlayerMovement : MonoBehaviour
         AudioManager.PlaySfx(SfxType.Walking, AudioManager._audioManagerInner.movementAudioSource);
     }
 
+    public static void DeactivateControls()
+    {
+        EscMenuController.isMenuActive = true; // Если эта переменная true, то элементы управления не работают
+    }
+
+    public static void ActivateControls()
+    {
+        EscMenuController.isMenuActive = false;
+    }
+
+    private void Flip()
+    {
+        //if(GetComponent<SpriteRenderer>().flipX)
+        //{
+        //    GetComponent<SpriteRenderer>().flipX = false;
+        //}
+        //else if (!GetComponent<SpriteRenderer>().flipX)
+        //{
+        //    GetComponent<SpriteRenderer>().flipX = true;
+        //}
+        transform.Rotate(0f, 180f, 0f);
+    }
 
 }

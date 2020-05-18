@@ -6,11 +6,10 @@ public class PlayerEnterSensor : MonoBehaviour
 {
     private EnemyAttack _enemyAttack;
     private IsAliveComponent _isAliveComponent;
-
     void Start()
     {
-        _enemyAttack = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyAttack>();
-        _isAliveComponent = GameObject.FindGameObjectWithTag("Enemy").GetComponent<IsAliveComponent>();
+        _enemyAttack = GetComponentInParent<EnemyAttack>();
+        _isAliveComponent = GetComponentInParent<IsAliveComponent>();
     }
 
     void OnTriggerEnter2D(Collider2D collider)
@@ -23,11 +22,12 @@ public class PlayerEnterSensor : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D collider)
     {
-        if (collider.tag == "Player" && _isAliveComponent.isAlive && !_enemyAttack._inAttack)
+        if (collider.tag == "Player" && _isAliveComponent.isAlive)
         {
             _enemyAttack.EnemyAttackLogic();
         }
     }
+
 
 
 }

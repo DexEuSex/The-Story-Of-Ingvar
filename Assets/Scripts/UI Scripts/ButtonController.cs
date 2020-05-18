@@ -20,12 +20,10 @@ public class ButtonController : MonoBehaviour
     [SerializeField] private Button _audioToggleInactiveButton;
     [SerializeField] private Button _backToMenuButton;
 
-    private EscMenuController _escMenuController;
 
 
     void Awake()
     {
-        _escMenuController = _escMenuController = GameObject.FindGameObjectWithTag("Canvas").GetComponent<EscMenuController>();
         _continueButton.onClick.AddListener(OnContinueButtonClick);
         _optionsButton.onClick.AddListener(OnOptionsButtonClick);
         _backToMenuButton.onClick.AddListener(OnBackToMenuButtonClick);
@@ -40,7 +38,7 @@ public class ButtonController : MonoBehaviour
 
     private void OnContinueButtonClick()
     {
-        _escMenuController.isMenuActive = false;
+        EscMenuController.isMenuActive = false;
         _escapeMenu.SetActive(false);
     }
 

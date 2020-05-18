@@ -5,16 +5,18 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
+    [SerializeField] private bool _inAttack = false;
+    [SerializeField] private float _timeCounter;
+    [SerializeField] private float timeBetweenAttack;
+    [SerializeField] private Transform attackPose;
+    [SerializeField] private Transform attackPoseFlipX;
+    [SerializeField] private float attackRange;
+    [SerializeField] private LayerMask whoIsEnemyToThisActor;
+    
+
     private ActorStatsController _actorStatsController;
     private Animator _enemyCombatAnimator;
     private IsAliveComponent _isAliveComponent;
-    public bool _inAttack = false;
-    public float _timeCounter;
-    public float timeBetweenAttack;
-    public Transform attackPose;
-    public Transform attackPoseFlipX;
-    public float attackRange;
-    public LayerMask whoIsEnemyToThisActor;
 
     void Start()
     {
@@ -33,7 +35,7 @@ public class EnemyAttack : MonoBehaviour
 
     public void EnemyAttackLogic()
     {
-        if (_timeCounter <= 0 && _inAttack == false)
+        if (_timeCounter <= 0 && !_inAttack)
         {
             if (GetComponent<SpriteRenderer>().flipX)
                 StartCoroutine("DealDamageToPlayerFlipX");
@@ -52,10 +54,10 @@ public class EnemyAttack : MonoBehaviour
         _inAttack = true;
         _enemyCombatAnimator.SetTrigger("Attack");
         yield return new WaitForSeconds(0.5f);
-        Collider2D[] playerToDamage = Physics2D.OverlapCircleAll(attackPose.position, attackRange, whoIsEnemyToThisActor);
-        for (int i = 0; i < playerToDamage.Length; i++)
+        Collider2D playerToDamage = Physics2D.OverlapCircle(attackPose.position, attackRange, whoIsEnemyToThisActor);
+        if(playerToDamage != null)
         {
-            playerToDamage[i].GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Enemy");
+            playerToDamage.GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Enemy");
         }
         _timeCounter = timeBetweenAttack;
         _inAttack = false;
@@ -67,10 +69,10 @@ public class EnemyAttack : MonoBehaviour
         _inAttack = true;
         _enemyCombatAnimator.SetTrigger("Attack");
         yield return new WaitForSeconds(0.5f);
-        Collider2D[] playerToDamage = Physics2D.OverlapCircleAll(attackPoseFlipX.position, attackRange, whoIsEnemyToThisActor);
-        for (int i = 0; i < playerToDamage.Length; i++)
+        Collider2D playerToDamage = Physics2D.OverlapCircle(attackPoseFlipX.position, attackRange, whoIsEnemyToThisActor);
+        if (playerToDamage != null)
         {
-            playerToDamage[i].GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Enemy");
+            playerToDamage.GetComponent<HealthComponent>().TakeDamage(_actorStatsController.actorDamage, "Enemy");
         }
         _timeCounter = timeBetweenAttack;
         _inAttack = false;
@@ -88,6 +90,11 @@ public class EnemyAttack : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public bool IsInAttack()
+    {
+        return _inAttack;
     }
 
 }

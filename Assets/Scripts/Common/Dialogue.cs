@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 
@@ -7,7 +8,19 @@ using UnityEngine;
 public class Dialogue
 {
 
+    [SerializeField] public GameObject playerDialogueField;
+    [SerializeField] public GameObject npcDialogueField;
+    [SerializeField] public TextMeshProUGUI playerDialogueText;
+    [SerializeField] public TextMeshProUGUI npcDialogueText;
+
+    public GameObject playerActor;
+    public GameObject npcActor;
+    public GameObject currentTrigger;
+    public bool isNpcAgressive;
+
     public List<Speeсh> listOfPhrases = new List<Speeсh>();
+
+    
 
 }
 
@@ -20,6 +33,9 @@ public class Speeсh
 
     [TextArea(3, 10)]
     public string sentenceOfPerson; // his sentence
+
+    
+
 
 }
 
